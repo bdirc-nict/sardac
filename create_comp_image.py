@@ -72,18 +72,15 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     
     """
     オンライン学習１　SAR画像解析基礎編
-    SARデータの読み込み
     
     SARデータを読み込み、ﾏﾙﾁﾙｯｸを行った結果を複素数で出力します
     
     関数  : create_scattering_matrix
     引数1 : 入力ファイル(*.mgp_HHm　or *.mgp_HVm or *.mgp_VVm)
-    引数2 : 出力2次元行列(実部)
-    引数3 : 出力2次元行列(虚部)
-    引数4 : SARデータ画像サイズ(アジマス方向)
-    引数5 : SARデータ画像サイズ(グランドレンジ方向)
-    引数6 : ﾏﾙﾁﾙｯｸサイズ(アジマス方向)
-    引数7 : ﾏﾙﾁﾙｯｸサイズ(グランドレンジ方向)
+    引数2 : SARデータ画像サイズ(アジマス方向)
+    引数3 : SARデータ画像サイズ(グランドレンジ方向)
+    引数4 : マルチルックサイズ(アジマス方向)
+    引数5 : マルチルックサイズ(グランドレンジ方向)
     
     返り値 : numpy complex64(複素数(実部：32bit,虚部：32bit))配列
     """
@@ -100,16 +97,6 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     matrix_b = exband_histgram(logarithm_trans(vv))
 
     # Create Tiff image file.
-    """
-    オンライン学習１　SAR画像解析基礎編
-    
-    SARデータの二次元配列を画像(.tif)として出力します
-    
-    関数   ： imsave
-    引数1  ： 出力ファイル名(*.tif)
-    引数2  ： SARデータ2次元行列
-                - RGB合成画像を生成する場合にはnp.stack([R要素,G要素,B要素])
-    """
     imsave(fn_single, np.stack([matrix_r, matrix_g, matrix_b]))
 
     # Create Geotiff file by "GDAL Translate".
