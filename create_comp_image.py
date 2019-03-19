@@ -82,7 +82,7 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     引数4 : マルチルックサイズ(アジマス方向)
     引数5 : マルチルックサイズ(グランドレンジ方向)
     
-    返り値 : numpy complex64(複素数(実部：32bit,虚部：32bit))配列
+    返り値 : 複素数(実部：32bit,虚部：32bit)配列
     """
     print("band 1 read ...")
     hh = create_scattering_matrix(in_hh, n_az, n_gr, win_az, win_gr)
@@ -130,9 +130,10 @@ def exband_histgram(src_matrix):
     
     画像の色調補正を行います
     
-    関数   ： exband_histgram
-    引数1  ： SARデータ2次元配列
+    関数   : exband_histgram
+    引数1  : SARデータ2次元配列(強度)
     
+    返り値　: ヒストグラム調整のされたSARデータ2次元配列(強度)
     """
     # replace inf and nan with 0
     src_matrix = np.vectorize(lambda x: x if (np.isfinite(x) and not np.isnan(x)) else 0)(src_matrix)
