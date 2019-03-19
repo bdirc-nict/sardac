@@ -97,6 +97,16 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     matrix_b = exband_histgram(logarithm_trans(vv))
 
     # Create Tiff image file.
+    """
+    オンライン学習１　SAR画像解析基礎編
+    
+    SAR二次元データを画像として出力します
+    
+    関数  : imsave
+    引数1 : 出力ファイル名(*.tif)
+    引数2 : SAR二次元データ
+        RGB画像の場合にはnp.stack([R成分、G成分、B成分])
+    """
     imsave(fn_single, np.stack([matrix_r, matrix_g, matrix_b]))
 
     # Create Geotiff file by "GDAL Translate".
