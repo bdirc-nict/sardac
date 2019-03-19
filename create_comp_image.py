@@ -163,11 +163,16 @@ def exband_histgram(src_matrix):
 
 def logarithm_trans(src_matrix):
     """
-    Logarithmic convert complex matrix
-    :param src_matrix: Numpy array of raw SAR image data
-    :return: converted data
+    オンライン学習１　SAR画像解析基礎編
+    
+    SAR二次元データの強度をとります。
+    
+    関数   ： logarithm_trans
+    引数1  ： SARデータ2次元配列
+    
+    返り値　: SARデータ2次元配列(強度)
     """
-    return np.vectorize(lambda x: (log10(x) * 10 if x != 0 else -np.inf))(np.abs(src_matrix))
+    return np.vectorize(lambda x: (log10(x) * 10 if x != 0 else -np.inf))((src_matrix * np.conjugate(src_matrix)).real)
 
 
 
