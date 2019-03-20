@@ -35,8 +35,8 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     :param in_vv: VV band data file of SAR image data
     :param in_info: SAR observation specification file
     :param ot_dir: The destination path
-    :param win_az: Multillok size of AZ direction
-    :param win_gr: Multillok size of GR direction
+    :param win_az: Multilook size of AZ direction
+    :param win_gr: Multilook size of GR direction
     """
 
     # Get destination file name
