@@ -13,6 +13,12 @@ import numpy as np
 from Common.mgp_info_reader import read_mgp_info, get_data, get_decimal_from_sexagesimal
 from Common.gdal_command import gdaltranslate_gcp, gdalwarp
 from scattering_matrix import create_scattering_matrix
+from covariance_matrix import create_covariance_matrix
+from entropy import calculate_entropy
+from eigen_value import calculate_eigen_value
+from four_component import four_component_decomposition
+from alpha_angle import calculate_alpha_angle
+from anisotropy import calculate_anisotropy
 
 from Common.constant import DEV_FLAG, DATA_PATH_BASE, IMAGE_FLOAT
 
@@ -35,8 +41,8 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     :param in_vv: VV band data file of SAR image data
     :param in_info: SAR observation specification file
     :param ot_dir: The destination path
-    :param win_az: Multilook size of AZ direction
-    :param win_gr: Multilook size of GR direction
+    :param win_az: Multillok size of AZ direction
+    :param win_gr: Multillok size of GR direction
     """
 
     # Get destination file name
@@ -82,7 +88,7 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     引数4 : マルチルックサイズ(アジマス方向)
     引数5 : マルチルックサイズ(グランドレンジ方向)
     
-    返り値 : 複素数(実部：32bit,虚部：32bit)配列
+    返り値 : numpy complex64(複素数(実部：32bit,虚部：32bit))配列
     """
     print("band 1 read ...")
     hh = create_scattering_matrix(in_hh, n_az, n_gr, win_az, win_gr)
@@ -90,11 +96,126 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     hv = create_scattering_matrix(in_hv, n_az, n_gr, win_az, win_gr)
     print("band 3 read ...")
     vv = create_scattering_matrix(in_vv, n_az, n_gr, win_az, win_gr)
+    
+    
+    # Create Coherency Matrix
+    """
+    オンライン学習2　SAR画像解析応用編
+    
+    散乱行列からCovariance行列を生成します
+    
+    関数  : create_covariance_matrix
+    引数1 : 散乱行列(HH成分)
+    引数2 : 散乱行列(HV成分)
+    引数3 : 散乱行列(VV成分)
+    引数4 : マルチルックサイズ(アジマス方向)
+    引数5 : マルチルックサイズ(グランドレンジ方向)
+    
+    返り値 : covariance行列成分(複素数(実部：32bit,虚部：32bit))配列
+    """
+    #print("Create Covariance Matrix ...")
+    #= create_covariance_matrix()
+    
+    #matrix_r = exband_histgram(np.vectorize(lambda x: (log10(x) * 10 if x != 0 else -np.inf))())
+    #matrix_g = exband_histgram(np.vectorize(lambda x: (log10(x) * 10 if x != 0 else -np.inf))())
+    #matrix_b = exband_histgram(np.vectorize(lambda x: (log10(x) * 10 if x != 0 else -np.inf))())
+    
+    # Four Component Decomposition
+    """
+    オンライン学習2　SAR画像解析応用編
+    
+    四成分散乱モデル分解法を適用します
+    
+    関数  : four_component_decomposition
+    引数1 : 散乱行列(HH成分)
+    引数2 : 散乱行列(HV成分)
+    引数3 : 散乱行列(VV成分)
+    引数4 : マルチルックサイズ(アジマス方向)
+    引数5 : マルチルックサイズ(グランドレンジ方向)
+    
+    返り値 : 四成分散乱電力(実数 32bit)配列
+    """
+    #print("Four Component Decomposition ...")
+    #= four_component_decomposition()
+    #matrix_r = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))())
+    #matrix_g = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))())
+    #matrix_b = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))())
+    
+    # Caluculate Eigen Value
+    """
+    オンライン学習2　SAR画像解析応用編
+    
+    Covariance行列から固有値を計算します
+    
+    関数  : calculate_eigen_value
+    引数1 : covariance行列(C11成分)
+    引数2 : covariance行列(C12成分)
+    引数3 : covariance行列(C13成分)
+    引数4 : covariance行列(C21成分)
+    引数5 : covariance行列(C22成分)
+    引数6 : covariance行列(C23成分)
+    引数7 : covariance行列(C31成分)
+    引数8 : covariance行列(C32成分)
+    引数9 : covariance行列(C33成分)
+    
+    返り値 : 固有値(複素数(実部：32bit,虚部：32bit))配列
+    """
+    #print("Calculate Eigen Value ...")
+    #= calculate_eigen_value()
+    
+    #matrix_r = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))())
+    #matrix_g = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))())
+    #matrix_b = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))())
 
-    # Logarithmic conversion and histogram adjustment
-    matrix_r = exband_histgram(logarithm_trans(hh))
-    matrix_g = exband_histgram(logarithm_trans(hv))
-    matrix_b = exband_histgram(logarithm_trans(vv))
+    # Calculate Entropy
+    """
+    オンライン学習2　SAR画像解析応用編
+    
+    固有値からエントロピーを計算します
+    
+    関数  : calculate_entropy
+    引数1 : 固有値1
+    引数2 : 固有値2
+    引数3 : 固有値3
+    
+    返り値 : エントロピー(実数 32bit)配列
+    """
+    #print("Caluculate Entropy ...")
+    #= calculate_entropy()
+    
+    
+    # Calculate Alpah Angle
+    """
+    オンライン学習2　SAR画像解析応用編
+    
+    固有値からアルファ角を計算します
+    
+    関数  : calculate_alpha_angle
+    引数1 : 固有値1
+    引数2 : 固有値2
+    引数3 : 固有値3
+    
+    返り値 : アルファ角(実数 32bit)配列
+    """
+    #print("Calculate Alpha Angle ...")
+    #= calculate_alpha_angle()
+
+    
+    # Calculate Anisotropy
+    """
+    オンライン学習2　SAR画像解析応用編
+    
+    固有値からAnisotropyを計算します
+    
+    関数  : calculate_anisotropy
+    引数1 : 固有値2
+    引数2 : 固有値3
+    
+    返り値 : Anisotropy(実数 32bit)配列
+    """
+    #print("Caluculate Anisotropy ...")
+    #= calculate_anisotropy()
+    
 
     # Create Tiff image file.
     """
@@ -108,6 +229,7 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
         RGB画像の場合にはnp.stack([R成分、G成分、B成分])
     """
     imsave(fn_single, np.stack([matrix_r, matrix_g, matrix_b]))
+    #imsave(fn_single, exband_histgram())
 
     # Create Geotiff file by "GDAL Translate".
     print("GDAL Translate ...")
@@ -140,10 +262,9 @@ def exband_histgram(src_matrix):
     
     画像の色調補正を行います
     
-    関数   : exband_histgram
-    引数1  : SARデータ2次元配列(強度)
+    関数   ： exband_histgram
+    引数1  ： SARデータ2次元配列
     
-    返り値　: ヒストグラム調整のされたSARデータ2次元配列(強度)
     """
     # replace inf and nan with 0
     src_matrix = np.vectorize(lambda x: x if (np.isfinite(x) and not np.isnan(x)) else 0)(src_matrix)
@@ -209,5 +330,5 @@ if __name__ == "__main__":
                       r"",
                       r"",
                       , )
-    
+                     
     exit(0)
