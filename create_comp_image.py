@@ -96,6 +96,9 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     hv = create_scattering_matrix(in_hv, n_az, n_gr, win_az, win_gr)
     print("band 3 read ...")
     vv = create_scattering_matrix(in_vv, n_az, n_gr, win_az, win_gr)
+    #matrix_r = exband_histgram(logarithm_trans(hh))
+    #matrix_g = exband_histgram(logarithm_trans(hv))
+    #matrix_b = exband_histgram(logarithm_trans(vv))
     
     
     # Create Coherency Matrix
