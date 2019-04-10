@@ -146,7 +146,7 @@ if __name__ == "__main__":
     clip_attribute(r"",
                    r"",
                    r"",
-                   r",
+                   r"",
                    )
                    
     exit(0)
