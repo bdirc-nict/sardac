@@ -185,7 +185,7 @@ if __name__ == "__main__":
     #    r""
     #]
 
-    #reate_sarmap_folder(1, r"", file_list_1, file_list_2, file_list_3, file_list_4)
+    #create_sarmap_folder(1, r"", file_list_1, file_list_2, file_list_3, file_list_4)
     
     
     exit(0)
