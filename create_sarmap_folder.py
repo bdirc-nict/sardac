@@ -22,7 +22,7 @@ def create_sarmap_folder(data_type_flg, ot_dir, *src_lists):
 
     被災領域のラスタ・ベクタデータを登録するためのフォルダを構成します
     
-    関数：create_xmap_folder
+    関数：create_sarmap_folder
     引数1：土砂崩れ(1)、浸水(2)
     引数2：出力ディレクトリ名
     引数3：入力ラスタ・ベクタデータ群
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     file_list_2：浸水二値化画像(*.tif)
     file_list_3：浸水マップ(*.shp)
     
-    関数：create_xmap_folder
+    関数：create_sarmap_folder
     引数1：2(固定)
     引数2：出力ディレクトリ名
     引数3：仙台SAR画像(*.tif)
@@ -151,7 +151,7 @@ if __name__ == "__main__":
         r""
     ]
 
-    create_xmap_folder(2, r"D:\projectdata\NICT\data\output\shinsui", file_list_1, file_list_2, file_list_3)
+    create_xmap_folder(2, r"", file_list_1, file_list_2, file_list_3)
 
 
     """
@@ -164,7 +164,7 @@ if __name__ == "__main__":
     file_list_3：土砂崩れ二値化画像(*.tif)
     file_list_4：土砂崩れマップ(*.shp)
     
-    関数：create_xmap_folder
+    関数：create_sarmap_folder
     引数1：1(固定)
     引数2：出力ディレクトリ名
     引数3：熊本災害前SAR画像(*.tif)
@@ -185,7 +185,7 @@ if __name__ == "__main__":
     #    r""
     #]
 
-    #reate_sarmap_folder(1, r"../java/test", file_list_1, file_list_2, file_list_3, file_list_4)
+    #reate_sarmap_folder(1, r"", file_list_1, file_list_2, file_list_3, file_list_4)
     
     
     exit(0)
