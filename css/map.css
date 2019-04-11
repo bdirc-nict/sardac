@@ -1,0 +1,175 @@
+html {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+    font-family: Meiryo, Tahoma, Verdana, Arial, sans-serif;
+    background-color: #181847;
+}
+
+/* settings about each input element padding */
+td {
+    padding:4px 2px 4px
+}
+
+#header {
+    height: 38px;
+    color: #ffffff;
+    background-color: #181847;
+    margin: 0px;
+    background-repeat: no-repeat;
+}
+
+#subheader {
+    height: 12px;
+    text-align: right;
+    font-size: 10px;
+    color: #ffffff;
+    background-repeat: no-repeat;
+    background-color: rgb(24, 24, 71);
+}
+
+#left {
+    float: left;
+    width: 0px;
+    background-color: white;
+}
+
+#right {
+    float: right;
+    width: 100%;
+}
+
+#map {
+    position: absolute;
+    left: 0px;
+    top: 50px;
+    width: 100%;
+    height: 100%;
+    border: 0px solid black;
+    z-index: 100000;
+}
+
+/* clearfix */
+.clearfix:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.clearfix {
+    overflow: hidden;
+    zoom: 1;
+}
+
+div.left {
+    text-align: left;
+    float: left;
+}
+div.right {
+    text-align: right;
+}
+.list {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+#tab {
+    background-color: #f1f1f1;
+}
+
+.tab-content {
+    overflow-y: scroll;
+    padding: 10px;
+}
+
+label {
+    font-weight: normal;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+    color: #ff6a00;
+}
+
+/* layer title of search result elements */
+.layerTitle {
+    display: inline;
+    position: absolute;
+    left: 30px;
+    top: 10px;
+}
+
+/* elements of disaster name and region name in the search disaster's result */
+h5, h6 {
+    margin-top: 0px;
+    margin-bottom: 1px;
+}
+
+footer {
+    background-color: rgb(24, 24, 71);
+    position: absolute;
+    bottom: 0px;
+    height: 25px;
+    width: 100%;
+}
+
+/* show latitude and longitude value in the header element */
+#mousePositionDiv {
+    position:absolute;
+    top:35px;
+    left:38%;
+}
+#mousePositionDiv,#mousePositionDiv p{
+    font-size:12px;
+    display:inline;
+    color: #fff;
+}
+
+.consent {
+    margin: 50px 0;
+    text-align: center;
+}
+
+.bold   {font-weight: bold;}
+.center {text-align: center;}
+
+.non_select {
+    user-select: none; /* CSS3 */
+    -moz-user-select: none; /* Firefox */
+    -webkit-user-select: none; /* Safari, Chrome etc. */
+    -ms-user-select: none; /* IE10 and later */
+}
+
+/* bounding box element in the search disaster menu */
+#bbox {
+    padding-bottom: 30px;
+}
+
+#minx {
+    float: left;
+    padding-right: 5em;
+}
+
+#bbox_min_x {
+    margin-right: 1em;
+    margin-left: 0.3em;
+}
+
+#bbox_min_y {
+    margin-left: 0.3em;
+}
+
+#bbox_max_x {
+    margin-right: 1em;
+    margin-left: 0.3em;
+}
+
+#bbox_max_y {
+    margin-left: 0.3em;
+}

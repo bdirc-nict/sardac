@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<!--
+    * SAR Data Analysis Program
+    * File name		: sarMap.html
+    * Creation date	: March 18, 2019
+    * License		: GPL v2
+    * Copyright (c) 2019 National Institute of Information and Communications Technology
+-->
+
+<head>
+    <title>sarMap</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv='imagetoolbar' content='no' />
+    <meta http-equiv="Expires" content="-1" />
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+        crossorigin="" />
+    <link rel="stylesheet" type="text/css" href="css/map.css" />
+    <link rel="stylesheet" type="text/css" href="css/L.Control.Zoomslider.css" />
+    <link rel="stylesheet" type="text/css" href="css/accordion.css" />
+
+    <script src="scripts/share/resize.js" type="text/javascript"></script>
+
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
+        crossorigin=""></script>
+    <script type="text/javascript" src="scripts/Leaflet.wmts.js?ts=2018_0501_0008"></script>
+    <script type="text/javascript" src="scripts/L.Control.Zoomslider.js"></script>
+    <script type="text/javascript" src="scripts/proj4.js"></script>
+
+    <script type="text/javascript" src="scripts/shapefile/encoding.min.js"></script>
+    <script type="text/javascript" src="scripts/shapefile/shapefile.js"></script>
+
+    <script src="scripts/jquery.js" type="text/javascript"></script>
+    <script src="scripts/jquery-ui.js" type="text/javascript"></script>
+    <script src="scripts/bootstrap.js" type="text/javascript"></script>
+
+    <script src="scripts/map.js?ts=2018_0515_0001" type="text/javascript"></script>
+</head>
+
+<body>
+    <div id="header">
+        <img src="images/logo2-mini.png" style="position:absolute;right:0px;" width="172" height="38" />
+    </div>
+    <div>
+        <div id="subheader">
+            <div id="mousePositionDiv" style=""><p>緯度経度：</p><p id="mousePosition"></p></div>
+            Copyright © 2019 National Institute of Information and Communications Technology
+        </div>
+        <div id="left">
+            <ul id="tab" class="nav nav-tabs">
+                <li class="in active">
+                    <a href="#search_disaster" data-toggle="pill">災害検索</a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+
+                <div id="search_disaster" class="tab-pane active">
+                    <!-- Search Page for Disaster -->
+                    <div id="bbox">
+                        <p>範囲矩形検索</p>
+                        </br>
+                        <table>
+                            <tr>
+                                <td nowrap>最小X座標: </td>
+                                <td>
+                                    <input class="bbox_min" type="text" name="bbox_min_x" id="bbox_min_x" size="10" maxlength="32" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td nowrap>最小Y座標: </td>
+                                <td>
+                                    <input class="bbox_top" type="text" name="bbox_min_y" id="bbox_min_y" size="10" maxlength="32" />
+                                </td>
+                            </tr>
+                        </table>
+                        <table>
+                            <tr>
+                                <td nowrap>最大X座標: </td>
+                                <td>
+                                    <input class="bbox_max" type="text" name="bbox_max_x" id="bbox_max_x" size="10" maxlength="32" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td nowrap>最大Y座標: </td>
+                                <td>
+                                    <input class="bbox_max" type="text" name="bbox_max_y" id="bbox_max_y" size="10" maxlength="32" />        
+                                </td>
+                            </tr>
+                        </table>
+                    </div> 
+                    <table>
+                        <tr>
+                            <td nowrap>災害名：</td>
+                            <td>
+                                <input type="text" name="disaster_name" id="disaster_name" style="width:200px;" maxlength="64" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td nowrap>地域：</td>
+                            <td>
+                                <select id="disaster_area" style="width:160px;">
+                                    <option value="0">----</option>
+                                    <option value="1">北海道</option>
+                                    <option value="2">東北</option>
+                                    <option value="3">関東</option>
+                                    <option value="4">北陸</option>
+                                    <option value="5">中部</option>
+                                    <option value="6">関西</option>
+                                    <option value="7">四国</option>
+                                    <option value="8">中国</option>
+                                    <option value="9">九州</option>
+                                    <option value="10">沖縄</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td nowrap>発生年度：</td>
+                            <td>
+                                <select id="disaster_yaer" style="width:160px;">
+                                    <option value="0">----</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr><td><input type="button" class="btn btn-primary" value="検索" onclick="getHazardInfo()" /></td><td>&nbsp;</td></tr>
+                    </table>
+                    <div id="request_result" class="tab-pane">
+                        <ul class="accordion_ul layerArea" id="hazardList">
+                            <!-- Search Results of Disaster Information -->
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="tabOpener" style="position:absolute; left:350px;top:47px; z-index:100001; cursor:pointer;">
+            <img id="openTab" src="images/moveLeft.gif" onclick="moveTab()" style="display:none;" />
+            <img id="closeTab" src="images/moveRight.gif" onclick="moveTab()" />
+        </div>
+
+        <div id="right">
+            <div id="map"></div>
+            <script type="text/javascript">
+                resize()
+            </script>
+        </div>
+
+    </div>
+
+    <footer style="position: fixed;"></footer>
+    <a id="dummyLink" style="display:none;"></a>
+</body>
+
+</html>

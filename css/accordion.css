@@ -1,0 +1,87 @@
+﻿section h5, section h6 {
+    color: #FFF;
+    cursor: pointer;
+    position: relative;
+}
+
+section h5:before, section h6:before {
+    display: block;
+    content: "";
+    position: absolute;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    top: 50%;
+    right: 15px;
+    width: 10px;
+    height: 10px;
+    margin-top: -8px;
+    background: #FFF;
+}
+
+section h5:after, section h6:after {
+    display: block;
+    content: "";
+    position: absolute;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    top: 50%;
+    right: 15px;
+    width: 10px;
+    height: 10px;
+    margin-top: -13px;
+}
+
+section h5.active:before, section h6.active:before {
+    margin-top: -3px;
+}
+
+section h5.active:after, section h6.active:after {
+    margin-top: 3px;
+}
+
+ul {
+    list-style: none;
+}
+
+ul, li {
+    padding-left: 0px;
+}
+
+
+
+
+
+
+
+section h5 {
+    padding: 10px;
+    background-color: rgb(24, 24, 71);
+}
+section h5:after {
+    background: rgb(24, 24, 71);
+}
+
+
+section h6 {
+    padding: 8px 10px 8px 10px;
+
+}
+
+.layerYear > li > section > h6,.layerYear > li > section > h6:after {
+    background-color: rgb(48, 81, 159);
+}
+
+.layerName > li > section > h6,.layerName > li > section > h6:after {
+    background-color: rgb(48, 81, 159);
+}
+
+.layerInfos > li > section > h6,.layerInfos > li > section > h6:after {
+    background-color: rgb(90, 176, 216);
+}
+
+.layerInfos > li > section > h6.selected, .layerInfos > li > section > h6.selected:after {
+    background-color: rgb(64, 128, 192);
+}
+
+
+

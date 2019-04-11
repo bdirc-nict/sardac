@@ -1,0 +1,55 @@
+[
+    { "id"  : "std", 
+      "name": "地理院地図",
+      "maps": [
+        {
+          "attribution": "<a href='http://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html' target='_blank'>国土地理院&nbsp;</a><a href='http://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>",
+          "url": "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",
+          "minZoom": 2,
+          "maxZoom": 20,
+          "minNativeZoom": 2,
+          "maxNativeZoom": 18
+        }
+      ],
+      "visible": true
+    },
+    { "id"  : "pale", 
+      "name": "地理院地図（淡色地図）",
+      "maps": [
+        {
+          "attribution": "<a href='http://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html' target='_blank'>国土地理院&nbsp;</a><a href='http://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>",
+          "url": "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png",
+          "minZoom": 2,
+          "maxZoom": 20,
+          "minNativeZoom": 2,
+          "maxNativeZoom": 18
+        }
+      ]
+    },
+    { "id"  : "seamless", 
+      "name": "地理院地図（航空写真）",
+      "maps": [
+        {
+          "attribution": "<a href='http://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html' target='_blank'>国土地理院&nbsp;</a><a href='http://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>",
+          "url": "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg",
+          "minZoom": 2,
+          "maxZoom": 20,
+          "minNativeZoom": 2,
+          "maxNativeZoom": 18
+        }
+      ]
+    },
+    { "id"  : "osm", 
+      "name": "OpenStreetMap",
+      "maps": [
+        {
+          "attribution": "&copy; <a href='http://www.openstreetmap.org/copyright' target='_blank'>OpenStreetMap</a> contributors",
+          "url": "http://tile.openstreetmap.jp/{z}/{x}/{y}.png",
+          "minZoom": 2,
+          "maxZoom": 20,
+          "minNativeZoom": 2,
+          "maxNativeZoom": 18
+        }
+      ]
+    }
+]
