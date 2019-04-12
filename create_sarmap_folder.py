@@ -40,16 +40,24 @@ def create_sarmap_folder(data_type_flg, ot_dir, *src_lists):
         引数1：データのID
         引数2：ラスタ・ベクタデータの種類
         
-            4: "単偏波合成画像(災害前)",
-            5: "単偏波合成画像(災害後)",
-            6: "四成分合成画像(災害前)",
-            7: "四成分合成画像(災害後)",
-            8: "パウリ合成画像(災害前)",
-            9: "パウリ合成画像(災害後)",
-            10: "差分ポリゴンShapeFile",
-            11: "差分画像",
-            12: "ｵﾘｼﾞﾅﾙ(災害前)",
-            13: "ｵﾘｼﾞﾅﾙ(災害後)",
+            4: "単偏波合成画像（災害前）",
+            5: "単偏波合成画像（災害後）",
+            6: "Covariance画像（災害前）",
+            7: "Covariance画像（災害後）",
+            8: "四成分合成画像（災害前）",
+            9: "四成分合成画像（災害後）",
+            10: "オリジナル画像1（災害前）",
+            11: "オリジナル画像1（災害後）",
+            12: "オリジナル画像2（災害前）",
+            13: "オリジナル画像2（災害後）",
+            14: "オリジナル画像3（災害前）",
+            15: "オリジナル画像3（災害後）",
+            16: "オリジナル画像4（災害前）",
+            17: "オリジナル画像4（災害後）",
+            18: "オリジナル画像5（災害前）",
+            19: "オリジナル画像5（災害後）",
+            20: "領域抽出ファイル",
+            21: "差分画像"
             
         引数3：観測日時
         
@@ -61,8 +69,8 @@ def create_sarmap_folder(data_type_flg, ot_dir, *src_lists):
         input_data_list = [
             InputTxtData.create_land_slide_data(time_str, 4, "20151205"),
             InputTxtData.create_land_slide_data(time_str, 5, "20160417"),
-            InputTxtData.create_land_slide_data(time_str, 11, "20160417"),
-            InputTxtData.create_land_slide_data(time_str, 10, "20160417")
+            InputTxtData.create_land_slide_data(time_str, 21, "20160417"),
+            InputTxtData.create_land_slide_data(time_str, 20, "20160417")
         ]
 
     elif data_type_flg == 2:
@@ -78,21 +86,29 @@ def create_sarmap_folder(data_type_flg, ot_dir, *src_lists):
         引数1：データのID
         引数2：ラスタ・ベクタデータの種類
         
-            4: "単偏波合成画像(災害前)",
-            5: "単偏波合成画像(災害後)",
-            6: "四成分合成画像(災害前)",
-            7: "四成分合成画像(災害後)",
-            8: "パウリ合成画像(災害前)",
-            9: "パウリ合成画像(災害後)",
-            10: "差分ポリゴンShapeFile",
-            11: "差分画像",
-            12: "ｵﾘｼﾞﾅﾙ(災害前)",
-            13: "ｵﾘｼﾞﾅﾙ(災害後)",
+            4: "単偏波合成画像（災害前）",
+            5: "単偏波合成画像（災害後）",
+            6: "Covariance画像（災害前）",
+            7: "Covariance画像（災害後）",
+            8: "四成分合成画像（災害前）",
+            9: "四成分合成画像（災害後）",
+            10: "オリジナル画像1（災害前）",
+            11: "オリジナル画像1（災害後）",
+            12: "オリジナル画像2（災害前）",
+            13: "オリジナル画像2（災害後）",
+            14: "オリジナル画像3（災害前）",
+            15: "オリジナル画像3（災害後）",
+            16: "オリジナル画像4（災害前）",
+            17: "オリジナル画像4（災害後）",
+            18: "オリジナル画像5（災害前）",
+            19: "オリジナル画像5（災害後）",
+            20: "領域抽出ファイル",
+            21: "差分画像"
         """
         input_data_list = [
             InputTxtData.create_flood_data(time_str, 5),
-            InputTxtData.create_flood_data(time_str, 11),
-            InputTxtData.create_flood_data(time_str, 10)
+            InputTxtData.create_flood_data(time_str, 21),
+            InputTxtData.create_flood_data(time_str, 20)
         ]
 
     if path.exists(ot_dir) and len(listdir(ot_dir)) > 0:
