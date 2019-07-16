@@ -4,7 +4,7 @@
     position: relative;
 }
 
-section h5:before, section h6:before {
+section h5:before {
     display: block;
     content: "";
     position: absolute;
@@ -18,7 +18,7 @@ section h5:before, section h6:before {
     background: #FFF;
 }
 
-section h5:after, section h6:after {
+section h5:after {
     display: block;
     content: "";
     position: absolute;

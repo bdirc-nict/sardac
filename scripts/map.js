@@ -13,11 +13,11 @@
 // Geoserver API
 //
 // 接続先のGeoserverアドレスを設定する
-var g_serverAddress = "";
+var g_serverAddress = "http://163.43.242.142:18080";
 
 // GeoserverのREST API設定変数
 // typeNameの値を使用するユーザIDに変更して下さい。
-var g_hazardSearchUrl = g_serverAddress + "";
+var g_hazardSearchUrl = g_serverAddress + "/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=nmap_usr46:disaster_list&maxFeatures=100&outputFormat=application%2Fjson";
 
 //---------------------------------------------------------------------
 var map; // Define instance of the Leafet Map Class
@@ -178,6 +178,8 @@ $(function () {
 
     resize();
 
+    document.getElementById("select_disaster").addEventListener("change", selectDisaster, false);
+
     //--- 2018/04/13 ---
     setTimeout(function () {
 
@@ -190,6 +192,9 @@ $(function () {
         resize();
         map.invalidateSize(false);
     }, 100);
+    
+    // Search Hazard info
+    getHazardInfo();
 });
 
 //*****************************************************************************
@@ -216,6 +221,10 @@ function round(num, n) {
     var tmp = Math.pow(10, n);
     return Math.round(num * tmp) / tmp;
 }
+
+
+
+
 
 //---------------------------------------------------------------------
 // Set up behavior of Accordion menu
@@ -255,23 +264,6 @@ function setAccordion() {
             return;
         }
 
-        if (g_aHazardLayerInfo.length > 0) {
-            // Process of if right edge is clicked
-            if (e.offsetX > 300) {
-                var id = -1;
-                try {
-                    id = $(this).attr("id").substr(11); // --> "hazard_name" + index;
-                    id = Number(id);
-                } catch (e) {}
-                if (id >= 0) {
-                    var info = g_aHazardLayerInfo[id];
-                    map.fitBounds(info.layer.bbox);
-                    return;
-                }
-            }
-        }
-
-
         if (e.target.tagName == "P") {
 
             var check = this.firstChild;
@@ -282,12 +274,28 @@ function setAccordion() {
             return;
         }
 
-        // Control of open or close
-        $(this).toggleClass("active");
-        $(this).next("ul").slideToggle();
     });
 }
 
+function jumpLayer(id) {
+    var info = g_aHazardLayerInfo[id];
+    map.fitBounds(info.layer.bbox);
+}
+
+
+
+function getUrlParameter() {
+    var vars = {}; 
+    var param = location.search.substring(1).split('&');
+    for(var i = 0; i < param.length; i++) {
+        var keySearch = param[i].search(/=/);
+        var key = '';
+        if(keySearch != -1) key = param[i].slice(0, keySearch);
+        var val = param[i].slice(param[i].indexOf('=', 0) + 1);
+        if(key != '') vars[key] = decodeURI(val);
+    } 
+    return vars;
+}
 
 //------------------------------------------------------------------------------
 // Layer definition
@@ -323,7 +331,7 @@ function mapInit() {
     var today = new Date();
     var year = today.getFullYear();
     for (var i = 2000; i <= year; i++) {
-        var opt = $(`<option value="${i}">${i}</option>`);
+        var opt = $('<option value="${i}">${i}</option>');
         $("#disaster_yaer").append(opt);
     }
 
@@ -521,52 +529,13 @@ function getHazardInfo() {
     }
     g_execComm = true;
 
-    var bbox_min_x = $("#bbox_min_x").val();
-    var bbox_min_y = $("#bbox_min_y").val();
-    var bbox_max_x = $("#bbox_max_x").val();
-    var bbox_max_y = $("#bbox_max_y").val();
-
-    var searchText = $("#disaster_name").val();
-    var filterArea = $("#disaster_area option:selected").html();
-    var fiscalYear = $("#disaster_yaer option:selected").html();
-    if (fiscalYear.indexOf("----") === 0) {
-        fiscalYear = 0;
-    } else {
-        fiscalYear = Number(fiscalYear);
-    }
-
     // Base url of the Geoserver REST API
     var url = g_hazardSearchUrl;
 
-    if (bbox_min_x.length > 0 && bbox_min_y.length > 0 &&
-        bbox_max_x.length > 0 && bbox_max_y.length > 0) {
-        url += ("&bbox=" + bbox_min_x + "," + bbox_min_y + "," + bbox_max_x + "," + bbox_max_y);
-    }
-
-    if ((searchText && searchText.length > 0) ||
-        filterArea.indexOf("----") !== 0 || fiscalYear > 0) {
-
-        url += "&viewparams=";
-        if (searchText && searchText.length > 0) {
-            url += ("disasterName:" + searchText + ";");
-        }
-        if (filterArea.indexOf("----") !== 0) {
-            var areaId = $("#disaster_area option:selected").attr("value");
-            if (areaId > 0) {
-                url += ("areaId:" + areaId) + ";";
-            }
-        }
-        if (fiscalYear > 0) {
-            var fromStr = "" + fiscalYear + "-01-01";
-            var toStr = "" + fiscalYear + "-12-31";
-
-            url += ("obsDateFrom:" + fromStr + ";");
-            url += ("obsDateTo:" + toStr + ";");
-        }
-    }
-
     var ptime_start = new Date().getTime();
     var ptime_end = null;
+
+    var checkTitle = getUrlParameter()["title"];
 
     $.ajax({
         type: "GET",
@@ -588,7 +557,7 @@ function getHazardInfo() {
     }).always(function (data, textStatus, errorThrown) {
         g_execComm = false;
         if (g_hazardInfo) {
-            searchDisasterInfo(g_hazardInfo);
+            searchDisasterInfo(g_hazardInfo, checkTitle);
         }
     });
 }
@@ -631,8 +600,8 @@ function parseHazardInfo(json) {
 
     features.sort(function (a, b) {
 
-        var ca = g_areaList[a.properties.area];
-        var cb = g_areaList[b.properties.area];
+        var ca = a.properties.disaster_name;
+        var cb = b.properties.disaster_name;
         if (ca == cb) {
 
             var ai = a.properties.disaster_id;
@@ -652,7 +621,7 @@ function parseHazardInfo(json) {
             }
             return (ai - bi);
         }
-        return (ca - cb);
+        return (ca > cb ? 1 : -1);
     });
 
     var wi = 0;
@@ -713,61 +682,24 @@ function replaceParentheses(str) {
 //-----------------------------------------------------------------------------
 // Search Disaster information
 //
-var g_areaList = {};
-g_areaList["北海道"] = 0;
-g_areaList["東北"] = 1;
-g_areaList["関東"] = 2;
-g_areaList["北陸"] = 3;
-g_areaList["中部"] = 4;
-g_areaList["関西"] = 5;
-g_areaList["四国"] = 6;
-g_areaList["中国"] = 7;
-g_areaList["九州"] = 8;
-g_areaList["沖縄"] = 9;
 
 /**
  * @param  {Array}  aInfo  Parsed disaster layers array
  */
-function searchDisasterInfo(aInfo) {
+function searchDisasterInfo(aInfo, checkTitle) {
 
     clearVisibleLayer();
     removeAllChildren("hazardList");
     g_selectedLayer = [];
-
-    var searchText = $("#disaster_name").val();
-    var filterArea = $("#disaster_area option:selected").html();
-    var fiscalYear = $("#disaster_yaer option:selected").html();
-    if (fiscalYear.indexOf("----") === 0) {
-        fiscalYear = 0;
-    } else {
-        fiscalYear = Number(fiscalYear);
-    }
 
     var windex = 0;
     var arr = [];
 
     for (var i = 0; i < aInfo.length; i++) {
         var info = aInfo[i];
-        if (searchText.length > 0) {
-            if (info.title.indexOf(searchText) < 0) {
-                continue;
-            }
-        }
-        if (filterArea.indexOf("----") !== 0) {
-            if (info.area.indexOf(filterArea) < 0) {
-                continue;
-            }
-        }
         var aLayer = info.layers;
         for (var j = 0; j < aLayer.length; j++) {
             var layer = aLayer[j];
-            if (searchText.length > 0) {
-                if (info.title.indexOf(searchText) < 0) {
-                    if (layer.title.indexOf(searchText) < 0) {
-                        continue;
-                    }
-                }
-            }
 
             var obj = {
                 title: info.title,
@@ -839,60 +771,36 @@ function searchDisasterInfo(aInfo) {
 
     // Set up the Search result tab
     var hazardList = $("#hazardList");
+    var selectctrl = $("#select_disaster")
 
     var prevAreaUl = null;
 
     for (var i = 0; i < arr.length; i++) {
         var info = arr[i];
-        var areaName = info.area;
         var title = replaceParentheses(info.title);
         var layer = info.layer;
-        var yy = info.layer.obs_date.split("/")[0];
         var id = "hazard_ul" + i;
         var wid = "hazard_name" + i;
-        var accordionLayerInfo = "<li><ul id='" + id + "' class='accordion_ul layerInfos'><li><section><h6></h6><ul></ul></section></li></ul></li>";
+        var accordionLayerInfo = "<li><ul id='" + id + "' class='accordion_ul layerInfos'><li><section><h6></h6></section></li></ul></li>";
 
         //--- Region name ---
-        var str = "hazard_" + areaName;
+        var str = "hazard_" + title;
+        var li_str = "li_" + title;
         var areaUl = document.getElementById(str);
 
         if (!areaUl) {
-            var areaLi = $(`<li><section><h5><span>${title}</span></h5><ul id="${str}"></ul></section></li>`);
+            var areaLi = $('<li id="' + li_str + '"><section><ul id="' + str + '"></ul></section></li>');
+            areaLi.hide();
             hazardList.append(areaLi);
-            setJumpOnClick(areaLi, areaName);
+            
+            selectctrl.append($('<option value="' + li_str + '">' + title + '</option>'))
+            
             areaUl = $("#" + str);
             prevAreaUl = areaUl;
         } else {
             areaUl = prevAreaUl;
         }
-        //--- Disaster name ---
-        var accordionTitle;
-        if (!areaUl.is(":contains(" + areaName + ")")) {
-            // Add layer name to accordion if nothing the "title" layer
-            accordionTitle = "<li><ul class='accordion_ul layerName'><li><section><h6>" + areaName + "</h6><ul id='" + layer.disaster_id + "'></ul></section></li></ul></li>"; //--- 2018/05/14 ---
-            areaUl.append(accordionTitle);
-            areaTitleUl = $("#" + layer.disaster_id);
-        }
-        var yearTitle;
-        if (!areaTitleUl.is(":contains(" + yy + ")")) {
-            yearTitle = "<li><ul class='accordion_ul layerYear'><li><section><h6>" + yy + "</h6><ul id='year_" + yy + "'></ul></section></li></ul></li>";
-            areaTitleUl.append(yearTitle);
-        }
-        var yearTitleUl = $("#" + "year_" + yy);
-
-        yearTitleUl.append(accordionLayerInfo);
-
-        var list = document.createElement('li');
-        $(list).addClass('list block');
-
-        if (layer.type.toLowerCase() == "shapefile" || layer.type.toLowerCase() == "wfs") {
-            $(list).append("<div>" + JSON.stringify(layer, null, "\t") + "</div>");
-        } else {
-            $(list).append("<div>" + JSON.stringify(layer, null, "\t") + "</div>");
-        }
-
-        var ul = $("#" + id + " ul");
-        ul.append(list);
+        areaUl.append(accordionLayerInfo);
 
         var input = document.createElement('input');
         $(input).attr("type", "checkbox").attr("id", 'overlayLayer' + i).attr("name", "layers").attr("value", i);
@@ -944,6 +852,8 @@ function searchDisasterInfo(aInfo) {
                     }
                     g_visibleLayer.push(mapLayer);
 
+                    jumpLayer(index);
+
                 } catch (e) {};
 
             } else {
@@ -963,7 +873,37 @@ function searchDisasterInfo(aInfo) {
     // Set Accordion menu
     setAccordion();
 
+    if(checkTitle && checkTitle.length > 0) {
+        var opt = $("#select_disaster > option:contains('" + checkTitle + "')");
+        if (opt.length == 1) {
+            var li_id = opt[0].value;
+            $("#select_disaster").val(li_id);
+            selectDisaster();
+            
+            $("#" + li_id + " input:checkbox").prop("checked", true);
+            $("#" + li_id + " input:checkbox").trigger("change");
+        } else if (opt.length == 0) {
+            alert("指定したレイヤが見つかりません。")
+        } else {
+            alert("指定したレイヤが複数見つかりました。")
+        }
+    }
+
 }
+
+
+function selectDisaster() {
+    var li_id = document.getElementById("select_disaster").value;
+
+    $("#hazardList > li").hide();
+    if (li_id != "") {
+        $("#" + li_id).show();
+    }
+
+    $("#hazardList input:checkbox").prop("checked",false);
+    $("#hazardList input:checkbox").trigger("change");
+}
+
 
 //---------------------------------------------------------------------
 // Removing all children from an element

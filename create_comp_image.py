@@ -27,6 +27,7 @@ from tifffile import imsave
 from math import ceil, log10
 from os import path, makedirs, remove
 import time
+import argparse
 
 
 format_name = "GTiff"
@@ -96,9 +97,9 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     hv = create_scattering_matrix(in_hv, n_az, n_gr, win_az, win_gr)
     print("band 3 read ...")
     vv = create_scattering_matrix(in_vv, n_az, n_gr, win_az, win_gr)
-    #matrix_r = exband_histgram(logarithm_trans(hh))
-    #matrix_g = exband_histgram(logarithm_trans(hv))
-    #matrix_b = exband_histgram(logarithm_trans(vv))
+    matrix_r = exband_histgram(logarithm_trans(hh))
+    matrix_g = exband_histgram(logarithm_trans(hv))
+    matrix_b = exband_histgram(logarithm_trans(vv))
     
     
     # Create Coherency Matrix
@@ -327,11 +328,24 @@ if __name__ == "__main__":
     引数7  ： マルチルックサイズ(グランドレンジ方向)
     
     """
-    create_comp_image(r"",
-                      r"",
-                      r"",
-                      r"",
-                      r"",
-                      , )
+    parser = argparse.ArgumentParser(description="create_comp_image")
+
+    parser.add_argument("in_file_hh")
+    parser.add_argument("in_file_hv")
+    parser.add_argument("in_file_vv")
+    parser.add_argument("in_file_info")
+    parser.add_argument("out_path")
+    parser.add_argument("filter_size_az", type=int)
+    parser.add_argument("filter_size_gr", type=int)
+
+    args = parser.parse_args()
+
+    create_comp_image(args.in_file_hh,
+                      args.in_file_hv,
+                      args.in_file_vv,
+                      args.in_file_info,
+                      args.out_path,
+                      args.filter_size_az,
+                      args.filter_size_gr)
                      
     exit(0)

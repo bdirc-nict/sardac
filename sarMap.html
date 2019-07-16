@@ -53,83 +53,9 @@
             Copyright © 2019 National Institute of Information and Communications Technology
         </div>
         <div id="left">
-            <ul id="tab" class="nav nav-tabs">
-                <li class="in active">
-                    <a href="#search_disaster" data-toggle="pill">災害検索</a>
-                </li>
-            </ul>
-
             <div class="tab-content">
-
+                <select id="select_disaster" style="width:100%;"><option value=""></option></select>
                 <div id="search_disaster" class="tab-pane active">
-                    <!-- Search Page for Disaster -->
-                    <div id="bbox">
-                        <p>範囲矩形検索</p>
-                        </br>
-                        <table>
-                            <tr>
-                                <td nowrap>最小X座標: </td>
-                                <td>
-                                    <input class="bbox_min" type="text" name="bbox_min_x" id="bbox_min_x" size="10" maxlength="32" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td nowrap>最小Y座標: </td>
-                                <td>
-                                    <input class="bbox_top" type="text" name="bbox_min_y" id="bbox_min_y" size="10" maxlength="32" />
-                                </td>
-                            </tr>
-                        </table>
-                        <table>
-                            <tr>
-                                <td nowrap>最大X座標: </td>
-                                <td>
-                                    <input class="bbox_max" type="text" name="bbox_max_x" id="bbox_max_x" size="10" maxlength="32" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td nowrap>最大Y座標: </td>
-                                <td>
-                                    <input class="bbox_max" type="text" name="bbox_max_y" id="bbox_max_y" size="10" maxlength="32" />        
-                                </td>
-                            </tr>
-                        </table>
-                    </div> 
-                    <table>
-                        <tr>
-                            <td nowrap>災害名：</td>
-                            <td>
-                                <input type="text" name="disaster_name" id="disaster_name" style="width:200px;" maxlength="64" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td nowrap>地域：</td>
-                            <td>
-                                <select id="disaster_area" style="width:160px;">
-                                    <option value="0">----</option>
-                                    <option value="1">北海道</option>
-                                    <option value="2">東北</option>
-                                    <option value="3">関東</option>
-                                    <option value="4">北陸</option>
-                                    <option value="5">中部</option>
-                                    <option value="6">関西</option>
-                                    <option value="7">四国</option>
-                                    <option value="8">中国</option>
-                                    <option value="9">九州</option>
-                                    <option value="10">沖縄</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td nowrap>発生年度：</td>
-                            <td>
-                                <select id="disaster_yaer" style="width:160px;">
-                                    <option value="0">----</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr><td><input type="button" class="btn btn-primary" value="検索" onclick="getHazardInfo()" /></td><td>&nbsp;</td></tr>
-                    </table>
                     <div id="request_result" class="tab-pane">
                         <ul class="accordion_ul layerArea" id="hazardList">
                             <!-- Search Results of Disaster Information -->

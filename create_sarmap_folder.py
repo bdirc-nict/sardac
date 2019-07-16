@@ -14,6 +14,7 @@ from Common.input_txt_writer import InputTxtData
 from os import path, makedirs, listdir
 from shutil import copy2, rmtree
 import time
+import argparse
 
 def create_sarmap_folder(data_type_flg, ot_dir, *src_lists):
     
@@ -157,51 +158,32 @@ if __name__ == "__main__":
     引数4：浸水二値化画像(*.tif)
     引数5：浸水マップ(*.shp)
     """
-    file_list_1 = [
-        r""
-    ]
-    file_list_2 = [
-        r""
-    ]
-    file_list_3 = [
-        r""
-    ]
+    parser = argparse.ArgumentParser(description="create_sarmap_folder")
 
-    create_xmap_folder(2, r"", file_list_1, file_list_2, file_list_3)
+    parser.add_argument("data_type_flg", choices=["flood", "landslide"])
+    parser.add_argument("out_path")
+    parser.add_argument("--data1", "-1", nargs="+")
+    parser.add_argument("--data2", "-2", nargs="+")
+    parser.add_argument("--data3", "-3", nargs="+")
+    parser.add_argument("--data4", "-4", nargs="+")
+
+    args = parser.parse_args()
+
+    lists = []
+    if args.data1 is not None:
+        lists.append(args.data1)
+    if args.data2 is not None:
+        lists.append(args.data2)
+    if args.data3 is not None:
+        lists.append(args.data3)
+    if args.data4 is not None:
+        lists.append(args.data4)
+
+    flg = 1 if args.data_type_flg == "landslide" else 2
+    create_sarmap_folder(flg,
+                         args.out_path,
+                         *lists)
 
 
-    """
-    SAR分析チャレンジ ハンズオン
-
-    土砂崩れ領域のラスタ・ベクタデータを登録するためのフォルダを構成するプログラムを実行します
-    
-    file_list_1：熊本災害前SAR画像(*.tif)
-    file_list_2：熊本災害後SAR画像(*.tif)
-    file_list_3：土砂崩れ二値化画像(*.tif)
-    file_list_4：土砂崩れマップ(*.shp)
-    
-    関数：create_sarmap_folder
-    引数1：1(固定)
-    引数2：出力ディレクトリ名
-    引数3：熊本災害前SAR画像(*.tif)
-    引数3：熊本災害後SAR画像(*.tif)
-    引数4：土砂崩れ二値化画像(*.tif)
-    引数5：土砂崩れマップ(*.shp)
-    """
-    #file_list_1 = [
-    #    r""
-    #]
-    #file_list_2 = [
-    #    r""
-    #]
-    #file_list_3 = [
-    #    r""
-    #]
-    #file_list_4 = [
-    #    r""
-    #]
-
-    #create_sarmap_folder(1, r"", file_list_1, file_list_2, file_list_3, file_list_4)
-    
     
     exit(0)

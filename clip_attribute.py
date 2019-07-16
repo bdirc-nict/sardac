@@ -14,6 +14,7 @@ from shapefile import Writer as ShpWriter
 from shapely.geometry import Polygon
 
 from os import path, makedirs
+import argparse
 from Common.constant import DATA_PATH_BASE
 
 
@@ -143,10 +144,20 @@ if __name__ == "__main__":
     引数5 : 出力フラグ(True：GISデータと重なる部分を出力、False：GISデータと重ならない部分を出力)
     
     """
-    clip_attribute(r"",
-                   r"",
-                   r"",
-                   r"",
-                   )
+    parser = argparse.ArgumentParser(description="clip_attribute")
+
+    parser.add_argument("in_mesh")
+    parser.add_argument("in_mask")
+    parser.add_argument("in_key")
+    parser.add_argument("out_path")
+    parser.add_argument("--pick_not_contain", action="store_true")
+
+    args = parser.parse_args()
+
+    clip_attribute(args.in_mesh,
+                   args.in_mask,
+                   args.in_key,
+                   args.out_path,
+                   not args.pick_not_contain)
                    
     exit(0)
