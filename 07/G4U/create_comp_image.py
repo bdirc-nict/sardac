@@ -29,6 +29,7 @@ from tifffile import imsave
 from math import ceil, log10
 from os import path, makedirs, remove
 import time
+import argparse
 from ywanalysis import saveHistogram
 
 
@@ -128,10 +129,9 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     pvhist = np.histogram(logpv, 100, (-100, 100))
     pshist = np.histogram(logps, 100, (-100, 100))
     
-    outdir = '/mnt/nfsdir/usr4/workspace/output/G4U/'
-    saveHistogram(outdir+"pdhist.txt", pdhist)
-    saveHistogram(outdir+"pvhist.txt", pvhist)
-    saveHistogram(outdir+"pshist.txt", pshist)
+    saveHistogram(path.join(ot_dir, "pdhist.txt"), pdhist)
+    saveHistogram(path.join(ot_dir, "pvhist.txt"), pvhist)
+    saveHistogram(path.join(ot_dir, "pshist.txt"), pshist)
   
     print(logpd.max())
     print(logpd.min())
@@ -166,153 +166,7 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     print("save image")
     imsave(fn_single, np.stack([matrix_r, matrix_g, matrix_b]))
     print("save image end")
-    exit(0)
-
-    #print("Create Covariance Matrix ...")
-    #c_11,c_12,c_13,c_21,c_22,c_23,c_31,c_32,c_33 = create_covariance_matrix(hh,hv,vv,3,3)
-    
-    """
-    matrix_r = exband_histgram(np.vectorize(lambda x: (log10(x) * 10 if x != 0 else -np.inf))(c_11.real))
-    matrix_g = exband_histgram(np.vectorize(lambda x: (log10(x) * 10 if x != 0 else -np.inf))(c_22.real))
-    matrix_b = exband_histgram(np.vectorize(lambda x: (log10(x) * 10 if x != 0 else -np.inf))(c_33.real))
-    """
-    # Four Component Decomposition
-    """
-    オンライン学習2　SAR画像解析応用編
-    
-    四成分散乱モデル分解法を適用します
-    
-    関数  : four_component_decomposition
-    引数1 : 散乱行列(HH成分)
-    引数2 : 散乱行列(HV成分)
-    引数3 : 散乱行列(VV成分)
-    引数4 : マルチルックサイズ(アジマス方向)
-    引数5 : マルチルックサイズ(グランドレンジ方向)
-    
-    返り値 : 四成分散乱電力(実数 32bit)配列
-    """
-    
-    print("Four Component Decomposition ...")
-    ps,pd,pv,pc = four_component_decomposition(hh,hv,vv,3,3)
-    #= four_component_decomposition()
-    
-    logpd =np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))(pd)
-    #matrix_r = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))(pd))
-    #matrix_g = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))(pv))
-    #matrix_b = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))(ps))
-
-    #truujou配色
-    #rangeMin = -94.0
-    #rangeMax = 67
-    rangeMin = -62.0 + 16
-    rangeMax = 35 - 16
-    matrix_r = exband2Range(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))(pd), rangeMin, rangeMax)
-    matrix_g = exband2Range(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))(pv), rangeMin, rangeMax)
-    matrix_b = exband2Range(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))(ps), rangeMin, rangeMax)
-    #matrix_b = exband2Range(np.vectorize(lambda x: (log10(x)*0 if x > 0 else -np.inf))(ps), rangeMin, rangeMax)
-
-    
-    oHHhist = np.histogram(logpd, 240, (-120, 120))
-    dirPath = '/mnt/nfsdir/usr4/workspace/result.mine/histogram/'
-    saveHistogram(dirPath + "pdhist.txt", oHHhist)
-    
-    
-    # Caluculate Eigen Value
-    """
-    オンライン学習2　SAR画像解析応用編
-    
-    Covariance行列から固有値を計算します
-    
-    関数  : calculate_eigen_value
-    引数1 : covariance行列(C11成分)
-    引数2 : covariance行列(C12成分)
-    引数3 : covariance行列(C13成分)
-    引数4 : covariance行列(C21成分)
-    引数5 : covariance行列(C22成分)
-    引数6 : covariance行列(C23成分)
-    引数7 : covariance行列(C31成分)
-    引数8 : covariance行列(C32成分)
-    引数9 : covariance行列(C33成分)
-    
-    返り値 : 固有値(複素数(実部：32bit,虚部：32bit))配列
-    """
-    #print("Calculate Eigen Value ...")
-    #= calculate_eigen_value()
-    #eig_1,eig_2,eig_3 = calculate_eigen_value(c_11,c_12,c_13,c_21,c_22,c_23,c_31,c_32,c_33)
-    """
-    matrix_r = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))((eig_1*eig_1.conjugate()).real))
-    matrix_g = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))((eig_2*eig_2.conjugate()).real))
-    matrix_b = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))((eig_3*eig_3.conjugate()).real))
-    """
-    #matrix_r = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))())
-    #matrix_g = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))())
-    #matrix_b = exband_histgram(np.vectorize(lambda x: (log10(x)*10 if x > 0 else -np.inf))())
-
-    # Calculate Entropy
-    """
-    オンライン学習2　SAR画像解析応用編
-    
-    固有値からエントロピーを計算します
-    
-    関数  : calculate_entropy
-    引数1 : 固有値1
-    引数2 : 固有値2
-    引数3 : 固有値3
-    
-    返り値 : エントロピー(実数 32bit)配列
-    """
-    #print("Caluculate Entropy ...")
-    #= calculate_entropy()
-    #h = calculate_entropy(eig_1,eig_2,eig_3)
-    
-    # Calculate Alpah Angle
-    """
-    オンライン学習2　SAR画像解析応用編
-    
-    固有値からアルファ角を計算します
-    
-    関数  : calculate_alpha_angle
-    引数1 : 固有値1
-    引数2 : 固有値2
-    引数3 : 固有値3
-    
-    返り値 : アルファ角(実数 32bit)配列
-    """
-    #print("Calculate Alpha Angle ...")
-    #= calculate_alpha_angle()
-    #alpha = calculate_alpha_angle(eig_1,eig_2,eig_3)
-
-    
-    # Calculate Anisotropy
-    """
-    オンライン学習2　SAR画像解析応用編
-    
-    固有値からAnisotropyを計算します
-    
-    関数  : calculate_anisotropy
-    引数1 : 固有値2
-    引数2 : 固有値3
-    
-    返り値 : Anisotropy(実数 32bit)配列
-    """
-    #print("Caluculate Anisotropy ...")
-    #= calculate_anisotropy()
-    #anisotropy = calculate_anisotropy(eig_2,eig_3)
-
-    # Create Tiff image file.
-    """
-    オンライン学習１　SAR画像解析基礎編
-    
-    SAR二次元データを画像として出力します
-    
-    関数  : imsave
-    引数1 : 出力ファイル名(*.tif)
-    引数2 : SAR二次元データ
-        RGB画像の場合にはnp.stack([R成分、G成分、B成分])
-    """
-    imsave(fn_single, np.stack([matrix_r, matrix_g, matrix_b]))
-    #imsave(fn_single, exband_histgram(alpha))
-    #imsave(fn_single, exband_histgram(anisotropy))
+    #exit(0)
 
     # Create Geotiff file by "GDAL Translate".
     print("GDAL Translate ...")
@@ -554,33 +408,24 @@ if __name__ == "__main__":
     引数7  ： マルチルックサイズ(グランドレンジ方向)
     
     """
-    """
-    create_comp_image(r"",
-                      r"",
-                      r"",
-                      r"",
-                      r"",
-                      , )
-    """  
-    """
-    create_comp_image(r"/mnt/nfsdir/input/sar/Sendai01.mgp_HHm", 
-                      r"/mnt/nfsdir/input/sar/Sendai01.mgp_HVm", 
-                      r"/mnt/nfsdir/input/sar/Sendai01.mgp_VVm", 
-                      r"/mnt/nfsdir/input/sar/Sendai01.mgp_HHm_info", 
-                      r"/mnt/nfsdir/usr4/workspace/output/test", 10,10)                      
-    """
-    """
-    create_comp_image(r"/mnt/nfsdir/input/sar/Obs15_aso-bridge.mgp_HHm", 
-                      r"/mnt/nfsdir/input/sar/Obs15_aso-bridge.mgp_HVm", 
-                      r"/mnt/nfsdir/input/sar/Obs15_aso-bridge.mgp_VVm", 
-                      r"/mnt/nfsdir/input/sar/Obs15_aso-bridge.mgp_HHm_info", 
-                      r"/mnt/nfsdir/usr4/workspace/output/4ref", 10,10)
-  
-    """
-    create_comp_image(r"/mnt/nfsdir/input/sar/Obs09_aso-bridge.mgp_HHm", 
-                      r"/mnt/nfsdir/input/sar/Obs09_aso-bridge.mgp_HVm", 
-                      r"/mnt/nfsdir/input/sar/Obs09_aso-bridge.mgp_VVm", 
-                      r"/mnt/nfsdir/input/sar/Obs09_aso-bridge.mgp_HHm_info", 
-                      r"/mnt/nfsdir/usr4/workspace/output/G4U", 1,1)
+    parser = argparse.ArgumentParser(description="create_comp_image")
+
+    parser.add_argument("in_file_hh")
+    parser.add_argument("in_file_hv")
+    parser.add_argument("in_file_vv")
+    parser.add_argument("in_file_info")
+    parser.add_argument("out_path")
+    parser.add_argument("filter_size_az", type=int)
+    parser.add_argument("filter_size_gr", type=int)
+
+    args = parser.parse_args()
+
+    create_comp_image(args.in_file_hh,
+                      args.in_file_hv,
+                      args.in_file_vv,
+                      args.in_file_info,
+                      args.out_path,
+                      args.filter_size_az,
+                      args.filter_size_gr)
     
     exit(0)

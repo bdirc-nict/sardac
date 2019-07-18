@@ -72,7 +72,7 @@ def calculate_alpha_angleYW(eig_1,eig_2,eig_3, evector):
     
     evhist = np.histogram(ev1, 100, (-1.0, 1.0))
     #outdir = '/mnt/nfsdir/usr4/workspace/output/alphaentropy/'
-    saveHistogram("ev1hist.txt", evhist)
+    #saveHistogram("ev1hist.txt", evhist)
     
     # replace inf and nan with 0
     np.vectorize(lambda x: x if (np.isfinite(x) and not np.isnan(x)) else 0)(p1)

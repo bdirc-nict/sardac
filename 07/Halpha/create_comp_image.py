@@ -32,19 +32,19 @@ from tifffile import imsave
 from math import ceil, log10
 from os import path, makedirs, remove
 import time
+import argparse
 
 
 format_name = "GTiff"
 mgp_key = "mgp_key"
 
-def saveHistograms(h, alpha):
+def saveHistograms(h, alpha, outdir):
     ohist = np.histogram(h, 100, (0.0, 1.0))
     oahist = np.histogram(alpha, 100, (0.0, 3.141592))
     #oahist = np.histogram(alpha, 100, (-2.0, 2.0))
     #outdir = '/mnt/nfsdir/usr4/workspace/output/alphaentropy/'
-    outdir = './'
-    saveHistogram(outdir+"hhist.txt", ohist)
-    saveHistogram(outdir+"alphahist.txt", oahist)
+    saveHistogram(path.join(outdir, "hhist.txt"), ohist)
+    saveHistogram(path.join(outdir, "alphahist.txt"), oahist)
 
 def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     """
@@ -177,7 +177,7 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     #print("Caluculate Entropy ...")
     #= calculate_entropy()
     h = calculate_entropy(eig_1,eig_2,eig_3)
-    imsave("entropy.tif", exband2Range(h, 0.0, 1.0))
+    imsave(path.join(ot_dir, "entropy.tif"), exband2Range(h, 0.0, 1.0))
 
     #exit (0)
     # Calculate Alpah Angle
@@ -198,7 +198,7 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     #alpha = calculate_alpha_angle(eig_1,eig_2,eig_3)
     alpha = calculate_alpha_angleYW(eig_1,eig_2,eig_3, evector)
 
-    saveHistograms(h, alpha)
+    saveHistograms(h, alpha, ot_dir)
     
     # Create Tiff image file.
 
@@ -215,17 +215,17 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, ot_dir, win_az, win_gr):
     imsave(fn_single, exband2Range(alpha, 0.0, 3.14159 / 2.0))
 
     combout= entropyAlpha(h,  alpha)
-    imsave("entropy.tif", exband2Range(h, 0.0, 1.0))
+    imsave(path.join(ot_dir, "entropy.tif"), exband2Range(h, 0.0, 1.0))
     
-    imsave("h0.tif", combout[0])
-    imsave("h1.tif", combout[1])
-    imsave("h2.tif", combout[2])
-    imsave("h3.tif", combout[3])
-    imsave("h4.tif", combout[4])
-    imsave("h5.tif", combout[5])
-    imsave("h6.tif", combout[6])
-    imsave("h7.tif", combout[7])
-    imsave("h8.tif", combout[8])
+    imsave(path.join(ot_dir, "h0.tif"), combout[0])
+    imsave(path.join(ot_dir, "h1.tif"), combout[1])
+    imsave(path.join(ot_dir, "h2.tif"), combout[2])
+    imsave(path.join(ot_dir, "h3.tif"), combout[3])
+    imsave(path.join(ot_dir, "h4.tif"), combout[4])
+    imsave(path.join(ot_dir, "h5.tif"), combout[5])
+    imsave(path.join(ot_dir, "h6.tif"), combout[6])
+    imsave(path.join(ot_dir, "h7.tif"), combout[7])
+    imsave(path.join(ot_dir, "h8.tif"), combout[8])
 
     # Create Geotiff file by "GDAL Translate".
     print("GDAL Translate ...")
@@ -325,36 +325,23 @@ if __name__ == "__main__":
     
     """
     
-    outdir = r"../output/"
-    srcdir = r"org/"
+    parser = argparse.ArgumentParser(description="create_comp_image")
 
-    create_comp_image(srcdir + r"Obs09_aso-bridge.mgp_HHm",
-                      srcdir + r"Obs09_aso-bridge.mgp_HVm",
-                      srcdir + r"Obs09_aso-bridge.mgp_VVm",
-                      srcdir + r"Obs09_aso-bridge.mgp_HHm_info",
-                      r"output/alpha",
-                      3,3)
-    """
+    parser.add_argument("in_file_hh")
+    parser.add_argument("in_file_hv")
+    parser.add_argument("in_file_vv")
+    parser.add_argument("in_file_info")
+    parser.add_argument("out_path")
+    parser.add_argument("filter_size_az", type=int)
+    parser.add_argument("filter_size_gr", type=int)
 
-    create_comp_image(srcdir + r"Obs15_aso-bridge.mgp_HHm",
-                      srcdir + r"Obs15_aso-bridge.mgp_HVm",
-                      srcdir + r"Obs15_aso-bridge.mgp_VVm",
-                      srcdir + r"Obs15_aso-bridge.mgp_HHm_info",
-                      r"output/alpha",
-                      3,3)
+    args = parser.parse_args()
 
-    """    
-    # create_comp_image(r"/mnt/nfsdir/input/sar/Sendai01.mgp_HHm", 
-    #                   r"/mnt/nfsdir/input/sar/Sendai01.mgp_HVm", 
-    #                   r"/mnt/nfsdir/input/sar/Sendai01.mgp_VVm", 
-    #                   r"/mnt/nfsdir/input/sar/Sendai01.mgp_HHm_info", 
-    #                   r"/mnt/nfsdir/usr4/workspace/output/alphaentropy", 1,1)
-    
-    """
-    create_comp_image(r"/mnt/nfsdir/input/sar/Obs09_aso-bridge.mgp_HHm", 
-                      r"/mnt/nfsdir/input/sar/Obs09_aso-bridge.mgp_HVm", 
-                      r"/mnt/nfsdir/input/sar/Obs09_aso-bridge.mgp_VVm", 
-                      r"/mnt/nfsdir/input/sar/Obs09_aso-bridge.mgp_HHm_info", 
-                      r"/mnt/nfsdir/usr4/workspace/output/alphaentropy", 10,10)
-    """
+    create_comp_image(args.in_file_hh,
+                      args.in_file_hv,
+                      args.in_file_vv,
+                      args.in_file_info,
+                      args.out_path,
+                      args.filter_size_az,
+                      args.filter_size_gr)
     exit(0)

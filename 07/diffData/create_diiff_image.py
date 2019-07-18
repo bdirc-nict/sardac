@@ -83,11 +83,16 @@ def create_comp_image(in_hh, in_hv, in_vv, in_info, win_az, win_gr):
     
     return loghh, logvv, loghv
     
-def savetoTiff(hh, hv, vv, ofname):
+def savetoTiff(hh, hv, vv, ofname, win_az, win_gr):
    # Logarithmic conversion and histogram adjustment
     matrix_r = visualize(hh, 8)#可視化のために●倍する
     matrix_g = visualize(hv, 8)
     matrix_b = visualize(vv, 8)
+
+    n_az = int(get_data(mgp_key, "IMAGE_SIZE_AZ"))
+    n_gr = int(get_data(mgp_key, "IMAGE_SIZE_GR"))
+    n_img_az = ceil(n_az / win_az)
+    n_img_gr = ceil(n_gr / win_gr)
 
     # Create Tiff image file.
     """
@@ -100,9 +105,9 @@ def savetoTiff(hh, hv, vv, ofname):
     """
     print("imsave start")
     
-    dirname, basename = os.path.split(ofname)
-    fn_single = path.join(dirname, "tmp_base_{0}.tif",format(time.strftime("%Y%m%d%H%M%S")))
-    fn_single_trans = path.join(dirname, "tmp_trans_{0}.tif",format(time.strftime("%Y%m%d%H%M%S")))
+    dirname, basename = path.split(ofname)
+    fn_single = path.join(dirname, "tmp_base_{0}.tif".format(time.strftime("%Y%m%d%H%M%S")))
+    fn_single_trans = path.join(dirname, "tmp_trans_{0}.tif".format(time.strftime("%Y%m%d%H%M%S")))
     imsave(fn_single, np.stack([matrix_r, matrix_g, matrix_b]))
     
     # Create Geotiff file by "GDAL Translate".
@@ -241,32 +246,52 @@ if __name__ == "__main__":
     """
     
     parser = argparse.ArgumentParser(description="create_comp_image")
-    parser.add_argument("in_file_hh")
-    parser.add_argument("in_file_hv")
-    parser.add_argument("in_file_vv")
-    parser.add_argument("in_file_info")
+    parser.add_argument("in_file1_hh")
+    parser.add_argument("in_file1_hv")
+    parser.add_argument("in_file1_vv")
+    parser.add_argument("in_file1_info")
+    parser.add_argument("in_file2_hh")
+    parser.add_argument("in_file2_hv")
+    parser.add_argument("in_file2_vv")
+    parser.add_argument("in_file2_info")
     parser.add_argument("out_path")
     parser.add_argument("filter_size_az", type=int)
     parser.add_argument("filter_size_gr", type=int)
     
-    
+    args = parser.parse_args()
+
+    ot_dir = path.abspath(path.join(DATA_PATH_BASE, args.out_path))
+    makedirs(ot_dir, exist_ok=True)
+
+    filename = path.splitext(path.basename( args.in_file1_hh))[0]
+    if filename.lower().startswith("sendai"):
+        basename = "Sendai"
+    elif filename.lower().startswith("obs15"):
+        basename = "Kumamoto"
+    elif filename.lower().startswith("obs09"):
+        basename = "Kumamoto"
+    else:
+        basename = filename
+
     loghh0, logvv0, loghv0 = create_comp_image(
-                        args.in_file_hh,
-                        args.in_file_hv,
-                        args.in_file_vv,
-                        args.in_file_info,
+                        args.in_file1_hh,
+                        args.in_file1_hv,
+                        args.in_file1_vv,
+                        args.in_file1_info,
                         args.filter_size_az,
                         args.filter_size_gr)
                         
     print("load data end")
     
-    #loghh1, logvv1, loghv1 = create_comp_imageDB(r"/mnt/nfsdir/input/sar/Obs09_aso-bridge.mgp_HHm",
-    #                    r"/mnt/nfsdir/input/sar/Obs09_aso-bridge.mgp_HVm",
-    #                    r"/mnt/nfsdir/input/sar/Obs09_aso-bridge.mgp_VVm",
-    #                    r"/mnt/nfsdir/input/sar/Obs09_aso-bridge.mgp_HHm_info",
-    #                    r"output/test",
-    #                    2,2)
-                
+    loghh1, logvv1, loghv1 = create_comp_image(
+                        args.in_file2_hh,
+                        args.in_file2_hv,
+                        args.in_file2_vv,
+                        args.in_file2_info,
+                        args.filter_size_az,
+                        args.filter_size_gr)
+    print("load data end")
+
     print (loghh0.dtype)
     print (loghh0.shape)
     
@@ -277,12 +302,12 @@ if __name__ == "__main__":
     loghv1 = median_filter(loghv1, 5)
     logvv1 = median_filter(logvv1, 5)
 
-    savetoTiff(loghh0, loghv0, logvv0, args.output)
-    #savetoTiff(loghh1, loghv1, logvv1, r"/mnt/nfsdir/usr4/workspace/result.mine/obs09.tif")
+    savetoTiff(loghh0, loghv0, logvv0, path.join(ot_dir, "{0}0.tif".format(basename)), args.filter_size_az, args.filter_size_gr)
+    savetoTiff(loghh1, loghv1, logvv1, path.join(ot_dir, "{0}0.tif".format(basename)), args.filter_size_az, args.filter_size_gr)
 
-    #hhdiff = np.abs(loghh0 - loghh1)
-    #vvdiff = np.abs(logvv0 - logvv1)
-    #hvdiff = np.abs(loghv0 - loghv1)
+    hhdiff = np.abs(loghh0 - loghh1)
+    vvdiff = np.abs(logvv0 - logvv1)
+    hvdiff = np.abs(loghv0 - loghv1)
     
     #oHHhist = np.histogram(hhdiff, 240, (0, 120))
     #oHVhist = np.histogram(hvdiff, 240, (0, 120))
@@ -293,9 +318,8 @@ if __name__ == "__main__":
     #saveHistogram(dirPath + "dhvhist.txt", oHVhist)
     #saveHistogram(dirPath + "dvvhist.txt", oVVhist)
     
-    
-    #dirPath2 = r"/mnt/nfsdir/usr4/workspace/result.mine/diffout.tif"
-    #savetoTiff(hhdiff, hvdiff, vvdiff, dirPath2)
+    fn_diff = path.join(ot_dir, "{0}_diff.tif".format(basename))
+    savetoTiff(hhdiff, hvdiff, vvdiff, fn_diff, args.filter_size_az, args.filter_size_gr)
     #savetoTiff(hhdiff, hhdiff, hhdiff, r"/mnt/nfsdir/usr4/workspace/result.mine/diffHHout.tif")
     #savetoTiff(hvdiff, hvdiff, hvdiff, r"/mnt/nfsdir/usr4/workspace/result.mine/diffHVout.tif")
     #savetoTiff(vvdiff, vvdiff, vvdiff, r"/mnt/nfsdir/usr4/workspace/result.mine/diffVVout.tif")
