@@ -57,8 +57,8 @@ def create_sarmap_folder(data_type_flg, ot_dir, *src_lists):
             17: "オリジナル画像4（災害後）",
             18: "オリジナル画像5（災害前）",
             19: "オリジナル画像5（災害後）",
-            20: "領域抽出ファイル",
             21: "差分画像"
+            1000: "領域抽出ファイル",
             
         引数3：観測日時
         
@@ -71,7 +71,7 @@ def create_sarmap_folder(data_type_flg, ot_dir, *src_lists):
             InputTxtData.create_land_slide_data(time_str, 4, "20151205"),
             InputTxtData.create_land_slide_data(time_str, 5, "20160417"),
             InputTxtData.create_land_slide_data(time_str, 21, "20160417"),
-            InputTxtData.create_land_slide_data(time_str, 20, "20160417")
+            InputTxtData.create_land_slide_data(time_str, 1000, "20160417")
         ]
 
     elif data_type_flg == 2:
@@ -103,13 +103,13 @@ def create_sarmap_folder(data_type_flg, ot_dir, *src_lists):
             17: "オリジナル画像4（災害後）",
             18: "オリジナル画像5（災害前）",
             19: "オリジナル画像5（災害後）",
-            20: "領域抽出ファイル",
             21: "差分画像"
+            1000: "領域抽出ファイル",
         """
         input_data_list = [
             InputTxtData.create_flood_data(time_str, 5),
             InputTxtData.create_flood_data(time_str, 21),
-            InputTxtData.create_flood_data(time_str, 20)
+            InputTxtData.create_flood_data(time_str, 1000)
         ]
 
     if path.exists(ot_dir) and len(listdir(ot_dir)) > 0:
