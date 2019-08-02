@@ -57,8 +57,16 @@ SAR分析チャレンジ ハンズオン
 
 """
 dic_area_type = {
+    1: "北海道",
     2: "東北",
+    3: "関東",
+    4: "北陸",
+    5: "中部",
+    6: "関西",
+    7: "四国",
+    8: "中国",
     9: "九州",
+    10: "沖縄",
 }
 
 
@@ -70,6 +78,7 @@ class InputTxtData:
         self.time_str = ""
         self.data_type_id = 0
         self.image_type_id = 0
+        self.image_type = ""
         self.area_type_id = 0
         self.title = ""
         self.mode = ""
@@ -115,6 +124,7 @@ class InputTxtData:
         data.time_str = time_str
         data.data_type_id = 2
         data.image_type_id = image_type_id
+        data.image_type = dic_image_type[image_type_id]
         data.area_type_id = 2
         data.title = "東日本大震災浸水領域"
         data.mode = "Mode1"
@@ -162,6 +172,7 @@ class InputTxtData:
         data.time_str = time_str
         data.data_type_id = 1
         data.image_type_id = image_type_id
+        data.image_type = dic_image_type[image_type_id]
         data.area_type_id = 9
         data.title = "熊本地震土砂崩れ領域"
         data.mode = "Mode1"
@@ -193,7 +204,7 @@ class InputTxtData:
             str(self.data_type_id),
             dic_data_type[self.data_type_id],
             str(self.image_type_id),
-            dic_image_type[self.image_type_id],
+            self.image_type,
             str(self.area_type_id),
             dic_area_type[self.area_type_id],
             self.title,

@@ -13,6 +13,7 @@ from Common.tif_util import RectGeoTiffCoordinateCalculator
 from add_height_vector import add_height_vector
 
 from Common.constant import DEV_FLAG, DATA_PATH_BASE
+from Common.mgp_info_reader import read_mgp_info, get_data
 
 from tifffile import imread
 from shapefile import Writer as ShpWriter
@@ -24,7 +25,7 @@ import time
 import argparse
 
 
-def trans_vector(in_file, ot_dir, output_flg, dem_path, flood_flg):
+def trans_vector(in_file, ot_dir, output_flg, dem_path, flood_flg, info_list):
     """
     オンライン学習3　被害領域の抽出、ラスタベクタ変換
 
@@ -54,7 +55,6 @@ def trans_vector(in_file, ot_dir, output_flg, dem_path, flood_flg):
     dem_path = path.join(DATA_PATH_BASE, dem_path)
     makedirs(ot_dir, exist_ok=True)
 
-    
     print("creating shapefile ...")
 
     # Create shapefile information of output area
@@ -81,12 +81,31 @@ def trans_vector(in_file, ot_dir, output_flg, dem_path, flood_flg):
     関数   ： get_land_slide_record
 
     """
+    pre_dn = ""
+    pre_st = ""
+    post_dn = ""
+    post_st = ""
+    if len(info_list) == 1:
+        read_mgp_info("info1", info_list[0])
+        vals = get_data("info1", "SCENE_START_TIME").split("/")
+        post_st = vals[0]+vals[1]+vals[2]
+        post_dn = path.splitext(path.basename(info_list[0]))[0]
+    elif len(info_list) == 2:
+        read_mgp_info("info1", info_list[0])
+        read_mgp_info("info2", info_list[1])
+        vals = get_data("info1", "SCENE_START_TIME").split("/")
+        pre_st = vals[0]+vals[1]+vals[2]
+        pre_dn = path.splitext(path.basename(info_list[0]))[0]
+        vals = get_data("info2", "SCENE_START_TIME").split("/")
+        post_st = vals[0]+vals[1]+vals[2]
+        post_dn = path.splitext(path.basename(info_list[1]))[0]
+
     if flood_flg:
         # flood processing
-        record = get_flood_record()
+        record = get_flood_record(pre_dn, pre_st, post_dn, post_st)
     else:
         # landslide processing
-        record = get_land_slide_record()
+        record = get_land_slide_record(pre_dn, pre_st, post_dn, post_st)
         
         
     # Read binary image and get coordinate information
@@ -178,7 +197,7 @@ def create_polygon_points(x_index, y_index, recttiff):
     lat2 = recttiff.get_lat_on_pixel_index(y_index+1)
     return [(lon1,lat1), (lon1,lat2), (lon2,lat2), (lon2,lat1), (lon1,lat1)]
 
-def get_flood_record():
+def get_flood_record(pre_dn, pre_st, post_dn, post_dt):
     """
     オンライン学習3　被害領域の抽出、ラスタベクタ変換
     
@@ -190,21 +209,20 @@ def get_flood_record():
     """
     atime = time.strftime("%Y%m%d%H%M%S")
     dbf_id = "{0}_210".format(atime)
-    dbf_format = "single" 
-    dbf_dis_tf = "20110311"
-    dbf_dis_tt = "20110311"
+    dbf_format = ""
+    dbf_dis_tf = ""
+    dbf_dis_tt = ""
     dbf_proc = time.strftime("%Y%m%d")
-
     dbf_type = "flood"
-    dbf_pre_dn = ""
-    dbf_pre_st = ""
-    dbf_post_dn = "Sendai01"
-    dbf_post_st = "20110318"
+    dbf_pre_dn = pre_dn
+    dbf_pre_st = pre_st
+    dbf_post_dn = post_dn
+    dbf_post_st = post_dt
 
     return [dbf_id, dbf_type, dbf_format, dbf_dis_tf, dbf_dis_tt, dbf_proc, dbf_pre_dn, dbf_pre_st, dbf_post_dn, dbf_post_st]
 
 
-def get_land_slide_record():
+def get_land_slide_record(pre_dn, pre_st, post_dn, post_dt):
     """
     オンライン学習3　被害領域の抽出、ラスタベクタ変換
     
@@ -216,17 +234,15 @@ def get_land_slide_record():
     """
     atime = time.strftime("%Y%m%d%H%M%S")
     dbf_id = "{0}_110".format(atime)
-    dbf_format = "single"
-    dbf_dis_tf = "20160414"
-    dbf_dis_tt = "20160414"
+    dbf_format = ""
+    dbf_dis_tf = ""
+    dbf_dis_tt = ""
     dbf_proc = time.strftime("%Y%m%d")
-
-    # 土砂
     dbf_type = "landslide"
-    dbf_pre_dn = "Obs15_aso-bridge"
-    dbf_pre_st = "20151205"
-    dbf_post_dn = "Obs09_aso-bridge"
-    dbf_post_st = "20160417"
+    dbf_pre_dn = pre_dn
+    dbf_pre_st = pre_st
+    dbf_post_dn = post_dn
+    dbf_post_st = post_dt
 
     return [dbf_id, dbf_type, dbf_format, dbf_dis_tf, dbf_dis_tt, dbf_proc, dbf_pre_dn, dbf_pre_st, dbf_post_dn, dbf_post_st]
 
@@ -252,13 +268,18 @@ if __name__ == "__main__":
     parser.add_argument("dem_file")
     parser.add_argument("type", choices=["flood", "landslide"])
     parser.add_argument("--non_damaged", action="store_true")
-
+    parser.add_argument("--info_path", nargs="*")
     args = parser.parse_args()
+
+    if args.type is None or (args.type == "landslide" and len(args.info_path) != 2) or (args.type == "flood" and len(args.info_path) not in (1,2)):
+        print("infoファイルの数が正しくありません")
+        exit(1)
 
     trans_vector(args.in_file,
                  args.out_path,
                  "1" if args.non_damaged else "0",
                  args.dem_file,
-                 args.type == "flood")
+                 args.type == "flood",
+                 args.info_path)
 
     exit(0)
