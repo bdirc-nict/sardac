@@ -35,14 +35,12 @@ FILTERSIZE	    ：フィルタリングサイズ
 
 3.ラスタベクタ変換
 
-コマンド：python3.6 trans_vector.py in_file out_path dem_file type [--non_damaged flg]
+コマンド：python3.6 trans_vector.py in_file out_path dem_file type
 
 in_file         ：浸水領域画像（*.tif）
 out_path        ：出力ディレクトリ
 dem_file        ：数値標高ファイル（*.shp）
 type            ：flood
-flg             ：被害領域※　⇒　0
-※ 浸水領域画像（0：非被害領域、255：被害領域）から被害領域を対象にベクタ変換を行う
 
 
 4.浸水領域マスクデータによるフィルタリング
