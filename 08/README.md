@@ -51,7 +51,7 @@ FILTERSIZE	        ：フィルタリングサイズ
 
 4.土砂崩れ領域画像の生成
 
-コマンド：python3.6 extract_landslide_area.py in_file_before in_file_after out_path [--threshold THRESHOLD] [--filter_size FILTER_SIZE FILTER_SIZE]
+コマンド：python3.6 extract_land_slide_area.py in_file_before in_file_after out_path [--threshold THRESHOLD] [--filter_size FILTER_SIZE FILTER_SIZE]
 
 in_file_before		：災害前単偏波合成(RGB)画像（*.tif）
 in_file_after		：災害後単偏波合成(RGB)画像（*.tif）
